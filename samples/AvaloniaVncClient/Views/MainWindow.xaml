@@ -7,7 +7,7 @@
                            xmlns:vnc="clr-namespace:MarcusW.VncClient.Avalonia;assembly=MarcusW.VncClient.Avalonia"
                            xmlns:vncconverters="clr-namespace:MarcusW.VncClient.Avalonia.Converters;assembly=MarcusW.VncClient.Avalonia"
                            xmlns:reactiveUi="http://reactiveui.net"
-                           mc:Ignorable="d" Width="1400" Height="1000"
+                           mc:Ignorable="d" Width="1500" Height="1000"
                            x:Class="AvaloniaVncClient.Views.MainWindow"
                            Icon="/Assets/avalonia-logo.ico"
                            Title="Avalonia VNC Client">
