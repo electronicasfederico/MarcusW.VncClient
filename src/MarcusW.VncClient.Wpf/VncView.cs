@@ -394,6 +394,18 @@ public class VncView : Control, IRenderTarget, IOutputHandler, IDisposable
 
     private bool HandlePointerEvent(Point pointerPoint, int wheelDelta, MouseButtons buttonsMask)
     {
+        if (Dispatcher.CheckAccess())
+        {
+            return HandlePointerEventCore(pointerPoint, wheelDelta, buttonsMask);
+        }
+        else
+        {
+            return Dispatcher.Invoke(() => HandlePointerEventCore(pointerPoint, wheelDelta, buttonsMask));
+        }
+    }
+
+    private bool HandlePointerEventCore(Point pointerPoint, int wheelDelta, MouseButtons buttonsMask)
+    {
         RfbConnection? connection = _rfbConnection;
         if (ViewOnly || connection == null)
         {
@@ -441,8 +453,9 @@ public class VncView : Control, IRenderTarget, IOutputHandler, IDisposable
                 Matrix m = source.TransformToDevice;
                 _scaling = m.M11; // x axis
             }
+            SendSetDesktopSize(new((int)obj.Width, (int)obj.Height));
         }, null);
-        SendSetDesktopSize(new((int)obj.Width, (int)obj.Height));
+        
     }
 
     private void OnRfbConnectionChanged(RfbConnection? oldValue, RfbConnection? newValue)
@@ -508,6 +521,20 @@ public class VncView : Control, IRenderTarget, IOutputHandler, IDisposable
     }
 
     private void SendSetDesktopSize(VncSize size)
+    {
+        if (Dispatcher.CheckAccess())
+        {
+            // Estamos en el UI thread, ejecutar directamente
+            SendSetDesktopSizeCore(size);
+        }
+        else
+        {
+            // Invocar en el UI thread
+            Dispatcher.BeginInvoke(new Action(() => SendSetDesktopSizeCore(size)));
+        }
+    }
+
+    private void SendSetDesktopSizeCore(VncSize size)
     {
         RfbConnection? connection = _rfbConnection;
         if (ViewOnly || connection == null)
